@@ -34,7 +34,7 @@ class AddsController extends GetxController {
 
   Rx<DateTime> selectedDate = Rx<DateTime>(DateTime.now());
 
-  Rx<String> _currentAddress = "".obs;
+  Rx<String> currentAddress = "".obs;
   Rx<Position?> _currentPosition = Rx<Position?>(null);
 
   String _message = '';
@@ -61,7 +61,7 @@ class AddsController extends GetxController {
   }
 
   FutureOr<void> insertTask(Task task) async {
-    final result = await taskUseCase.insertTaskExecute(task);
+    final result = await taskUseCase.insertTaskRemoteExecute(task);
     _message = result;
     Get.snackbar("Success", _message,
         snackPosition: SnackPosition.BOTTOM,
@@ -154,7 +154,7 @@ class AddsController extends GetxController {
     await placemarkFromCoordinates(position.latitude, position.longitude)
         .then((List<Placemark> placemarks) {
       Placemark place = placemarks[0];
-      _currentAddress(
+      currentAddress(
           '${place.street}, ${place.subLocality}, ${place.subAdministrativeArea}, ${place.postalCode}');
     }).catchError((e) {
       debugPrint(e);

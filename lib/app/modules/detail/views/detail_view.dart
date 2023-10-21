@@ -30,7 +30,7 @@ class DetailView extends GetView<DetailController> {
                   child: Column(
                     children: [
                       Expanded(
-                        flex: 1,
+                        flex: 2,
                         child: Container(
                           child: Row(
                             children: [
@@ -38,59 +38,75 @@ class DetailView extends GetView<DetailController> {
                                   borderRadius: BorderRadius.circular(
                                       10.0), // Ubah angka sesuai keinginan Anda
                                   child: Image.file(
-                                    File(controller.task.photo),
-                                    height: 200,
+                                    File(controller.task['photo']),
+                                    height: 300,
                                     width: 200,
                                     fit: BoxFit
                                         .cover, // Sesuaikan dengan kebutuhan Anda
                                   ),
                                 ),
                               ),
-                              const SizedBox(width:20),
-                                Expanded(child: Column(
-                                crossAxisAlignment: CrossAxisAlignment
-                                    .start, // Ratakan teks ke kiri
-                                children: [
-                                  const SizedBox(height: 10),
-                                  const Text(
-                                    "Name",
-                                    style:
-                                        TextStyle(fontSize:16,fontWeight: FontWeight.bold),
-                                  ),
-                                  const SizedBox(height: 5),
-                                  Text(
-                                    controller.task.name,
-                                    textAlign:
-                                        TextAlign.left, // Ratakan teks ke kiri
-                                  ),
-                                  const SizedBox(height: 10),
-                                  const Text(
-                                    "Description",
-                                    style:
-                                        TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  const SizedBox(height: 5),
-                                  Text(
-                                    controller.task.description,
-                                    textAlign:
-                                        TextAlign.left, // Ratakan teks ke kiri
-                                  ),
-                                  const SizedBox(height: 10),
-                                  const Text(
-                                    "Date ",
-                                    style:
-                                        TextStyle(fontSize:16,fontWeight: FontWeight.bold),
-                                  ),
-                                  const SizedBox(height: 5),
-                                  Text(
-                                    controller.task.date,
-                                    textAlign:
-                                        TextAlign.left, // Ratakan teks ke kiri
-                                  ),
-                                ],
-                              )
+                                Expanded(child: Container(
+                                  padding: const EdgeInsets.all(15),
+                                  child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment
+                                      .start, // Ratakan teks ke kiri
+                                  children: [
+                                    const SizedBox(height: 10),
+                                    const Text(
+                                      "Name",
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    const SizedBox(height: 5),
+                                    Text(
+                                      controller.task['name'],
+                                      textAlign: TextAlign
+                                          .left, // Ratakan teks ke kiri
+                                    ),
+                                    const SizedBox(height: 10),
+                                    const Text(
+                                      "Description",
+                                      style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    const SizedBox(height: 5),
+                                    Text(
+                                      controller.task['description'],
+                                      textAlign: TextAlign
+                                          .left, // Ratakan teks ke kiri
+                                    ),
+                                    const SizedBox(height: 10),
+                                    const Text(
+                                      "Date ",
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    const SizedBox(height: 5),
+                                    Text(
+                                      controller.task['date'],
+                                      textAlign: TextAlign
+                                          .left, // Ratakan teks ke kiri
+                                    ),
+                                    const SizedBox(height: 5),
+                                    const Text(
+                                      "Address",
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    const SizedBox(height: 5),
+                                    Text(
+                                      controller.task['address'],
+                                      textAlign: TextAlign
+                                          .left, // Ratakan teks ke kiri
+                                    ),
+                                  ],
+                                ),
+                                )
 
                               )
                             ],
@@ -104,7 +120,7 @@ class DetailView extends GetView<DetailController> {
                           children: [
                             const SizedBox(height: 20),
                               const Text(
-                                "Location",
+                                "Detail Address (Location)",
                                 style: TextStyle(
                                     fontSize: 18, fontWeight: FontWeight.bold),
                               ),
@@ -118,9 +134,9 @@ class DetailView extends GetView<DetailController> {
                                   },
                                   initialCameraPosition: CameraPosition(
                                     target: LatLng(
-                                        double.parse(controller.task.latitude),
+                                        double.parse(controller.task['latitude']),
                                         double.parse(
-                                            controller.task.longitude)),
+                                            controller.task['longitude'])),
                                     zoom: 15,
                                   ),
                                   markers: {
@@ -128,9 +144,9 @@ class DetailView extends GetView<DetailController> {
                                         markerId: const MarkerId("marker1"),
                                         position: LatLng(
                                             double.parse(
-                                                controller.task.latitude),
+                                                controller.task['latitude']),
                                             double.parse(
-                                                controller.task.longitude)),
+                                                controller.task['longitude'])),
                                         draggable: true,
                                         icon: BitmapDescriptor.defaultMarker),
                                   },

@@ -31,7 +31,8 @@ class AddsView extends GetView<AddsController> {
                         photo: controller.pathImage.value,
                         date: controller.date.text.toString(),
                         quantity:
-                            int.parse(controller.quantity.text.toString())));
+                            int.parse(controller.quantity.text.toString()),
+                        address:controller.currentAddress.value  ));
                   }
                 } else {
                   Get.snackbar("Warning", "All data must be filled in",

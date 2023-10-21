@@ -10,4 +10,10 @@ class TaskUseCase {
 
   Future<String> insertTaskExecute(Task task) =>
       taskRepository.insertTask(task);
+
+  Future<List<Map<String, dynamic>>> getAllTaskRemoteExecute() =>
+      taskRepository.getAllTaskRemote();
+
+  Future<String> insertTaskRemoteExecute(Task task) =>
+      taskRepository.insertTaskRemote(task);
 }

@@ -32,7 +32,7 @@ class TaskDatabaseHelper {
   void _onCreate(Database db, int version) async {
     await db.execute('''
       CREATE TABLE  $_tblTask (
-        "id" INTEGER PRIMARY KEY ,
+        "id" INTEGER ,
         "name" TEXT,
         "description" TEXT,
         "quantity" INTEGER,
@@ -40,6 +40,7 @@ class TaskDatabaseHelper {
         "longitude" TEXT,
         "date" TEXT,
         "photo" TEXT,
+        "address" TEXT,
         PRIMARY KEY ("id" AUTOINCREMENT)
       );
     ''');
@@ -52,7 +53,8 @@ class TaskDatabaseHelper {
         latitude TEXT,
         longitude TEXT,
         date TEXT,
-        photo TEXT
+        photo TEXT,
+        address TEXT
       );
     ''');
   }
@@ -61,8 +63,8 @@ class TaskDatabaseHelper {
   FutureOr<int> insertTask(TaskModel task) async {
     final db = await database;
     return await db!.rawInsert('''
-    INSERT INTO $_tblTask (name, description, quantity, latitude, longitude, date, photo)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO $_tblTask (name, description, quantity, latitude, longitude, date, photo,address)
+    VALUES (?, ?, ?, ?, ?, ?, ?,?)
   ''', [
       task.name,
       task.description,
@@ -71,6 +73,7 @@ class TaskDatabaseHelper {
       task.longitude,
       task.date,
       task.photo,
+      task.address,
     ]);
   }
 

@@ -9,7 +9,10 @@ import 'package:task_mobile/app/domain/usecase/task_usecase.dart';
 class HomeController extends GetxController {
 
   RxList<Task> listTask = <Task>[].obs;
-   List<Task> get taskList => listTask;
+  List<Task> get taskList => listTask;
+
+  RxList<Map<String,dynamic>> listTaskRemote = <Map<String,dynamic>>[].obs;
+  List<Map<String, dynamic>> get taskListRemote => listTaskRemote;
 
   final TaskUseCase taskUseCase = GetIt.I.get<TaskUseCase>();
 
@@ -20,9 +23,17 @@ class HomeController extends GetxController {
     listTask.refresh();
   }
 
+  FutureOr<void> getAllTaskRemote() async {
+    final result = await taskUseCase.getAllTaskRemoteExecute();
+    print(result); // Tambahkan ini
+    listTaskRemote(result);
+    listTask.refresh();
+  }
+
   @override
   void onInit() {
     getAllTask();
+    getAllTaskRemote();
     print(taskList);
     super.onInit();
   }

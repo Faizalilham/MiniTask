@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
-import 'package:task_mobile/app/components/card_task.dart';
+
 import 'package:task_mobile/app/routes/app_pages.dart';
 
 import '../controllers/home_controller.dart';
@@ -22,16 +22,16 @@ class HomeView extends GetView<HomeController> {
               Get.toNamed(Routes.ADDS);
             }),
         body: Obx(() {
-          return controller.listTask.isEmpty
+          return controller.listTaskRemote.isEmpty
               ? const Center(
                   child: CircularProgressIndicator(),
                 )
               : ListView.builder(
-                  itemCount: controller.listTask.length,
+                  itemCount: controller.listTaskRemote.length,
                   itemBuilder: (context, index) {
                     return InkWell(
                       onTap: () {
-                        Get.toNamed(Routes.DETAIL, arguments: controller.listTask[index]);
+                        Get.toNamed(Routes.DETAIL, arguments: controller.listTaskRemote[index]);
                       },
                       child: Card(
                           child: Container(
@@ -39,7 +39,7 @@ class HomeView extends GetView<HomeController> {
                               child: ListTile(
                                 leading: ClipOval(
                                   child: Image.file(
-                                    File(controller.listTask[index].photo),
+                                    File(controller.listTaskRemote[index]['photo']),
                                     width:
                                         50, 
                                     height:
@@ -48,8 +48,8 @@ class HomeView extends GetView<HomeController> {
                                         .cover,
                                   ),
                                 ),
-                                title: Text(controller.listTask[index].name),
-                                subtitle: Text(controller.listTask[index].description),
+                                title: Text(controller.listTaskRemote[index]['name']),
+                                subtitle: Text(controller.listTaskRemote[index]['description']),
                                 trailing: const Icon(Icons.keyboard_arrow_right_outlined),
                               ))),
                     );

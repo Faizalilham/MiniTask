@@ -1,15 +1,17 @@
+import 'dart:async';
+
 import 'package:task_mobile/app/data/datasource/local/local_data_source_task.dart';
+import 'package:task_mobile/app/data/datasource/remote/remote_data_source_task.dart';
 import 'package:task_mobile/app/data/models/task_model.dart';
 import 'package:task_mobile/app/domain/entity/task.dart';
 import 'package:task_mobile/app/domain/repository/task_repository.dart';
-import 'package:task_mobile/app/utils/exception.dart';
 
 class TaskRepositoryImpl implements TaskRepository {
   final LocalDataSourceTask localDataSourceTask;
+  final RemoteDataSourceTask remoteDataSourceTask;
 
-  const TaskRepositoryImpl({
-    required this.localDataSourceTask,
-  });
+  const TaskRepositoryImpl(
+      {required this.localDataSourceTask, required this.remoteDataSourceTask});
 
   @override
   Future<List<Task>> getAllTask() async {
@@ -27,5 +29,15 @@ class TaskRepositoryImpl implements TaskRepository {
       print(e);
       throw e;
     }
+  }
+
+  @override
+  Future<List<Map<String, dynamic>>> getAllTaskRemote() {
+    return remoteDataSourceTask.getAllTask();
+  }
+
+  @override
+  Future<String> insertTaskRemote(Task task) {
+    return remoteDataSourceTask.insertTask(TaskModel.fromEntity(task));
   }
 }

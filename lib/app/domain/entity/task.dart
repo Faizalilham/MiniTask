@@ -1,27 +1,28 @@
 import 'package:equatable/equatable.dart';
 
-class Task extends Equatable{
-
+class Task extends Equatable {
   final int? id;
   final String name;
   final String description;
   final int quantity;
   final String latitude;
-   final String longitude;
+  final String longitude;
   final String photo;
   final String date;
+  final String address;
 
   const Task(
-      { this.id,
+      {this.id,
       required this.name,
       required this.description,
       required this.latitude,
       required this.longitude,
       required this.photo,
       required this.date,
-      required this.quantity});
-      
-  @override
-  List<Object?> get props => [id,name,description,quantity,latitude,longitude,photo,date];
+      required this.quantity,
+      required this.address});
 
+  @override
+  List<Object?> get props =>
+      [id, name, description, quantity, latitude, longitude, photo, date,address];
 }

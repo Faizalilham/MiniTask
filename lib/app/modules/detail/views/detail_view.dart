@@ -1,8 +1,8 @@
-import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -34,17 +34,26 @@ class DetailView extends GetView<DetailController> {
                         child: Container(
                           child: Row(
                             children: [
-                                Expanded(child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(
-                                      10.0), // Ubah angka sesuai keinginan Anda
-                                  child: Image.file(
-                                    File(controller.task['photo']),
-                                    height: 300,
-                                    width: 200,
-                                    fit: BoxFit
-                                        .cover, // Sesuaikan dengan kebutuhan Anda
+                                Expanded(child: CachedNetworkImage(
+                                    imageUrl: controller.task['photo'],
+                                    placeholder: (context, url) =>
+                                        CircularProgressIndicator(),
+                                    errorWidget: (context, url, error) =>
+                                        Icon(Icons.error),
+                                    imageBuilder: (context, imageProvider) {
+                                      return Container(
+                                        width: 200,
+                                        height: 300,
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.all(Radius.circular(15)),
+                                          image: DecorationImage(
+                                              image: imageProvider,
+                                              fit: BoxFit.cover),
+                                        ),
+                                      );
+                                    },
                                   ),
-                                ),
+                                
                               ),
                                 Expanded(child: Container(
                                   padding: const EdgeInsets.all(15),

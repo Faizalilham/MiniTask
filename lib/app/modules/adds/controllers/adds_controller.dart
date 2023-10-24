@@ -1,5 +1,8 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:path/path.dart' as p;
+import 'package:task_mobile/app/utils/utils.dart';
 
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
@@ -8,6 +11,7 @@ import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:task_mobile/app/domain/entity/task.dart';
 import 'package:task_mobile/app/domain/usecase/task_usecase.dart';
 import 'package:task_mobile/app/modules/home/controllers/home_controller.dart';
@@ -20,6 +24,7 @@ class AddsController extends GetxController {
   final TextEditingController description = TextEditingController();
   final TextEditingController quantity = TextEditingController();
   final TextEditingController date = TextEditingController();
+
   String formatDate(DateTime value) {
     return DateFormat.yMMMMd().format(value);
   }
@@ -28,9 +33,15 @@ class AddsController extends GetxController {
 
   Rx<String> pathImage = "".obs;
 
+  Rx<String> pathImageUrl = "".obs;
+
   Rx<String> latitude = "".obs;
 
   Rx<String> longitude = "".obs;
+
+  var isConnected = false;
+
+  Rx<bool> isLoading = false.obs;
 
   Rx<DateTime> selectedDate = Rx<DateTime>(DateTime.now());
 
@@ -40,6 +51,11 @@ class AddsController extends GetxController {
   String _message = '';
   String get message => _message;
 
+  late StreamSubscription<ConnectivityResult> subscription;
+
+  List<Function> delayedActions = [];
+
+
   final TaskUseCase taskUseCase = GetIt.I.get<TaskUseCase>();
 
   // TaskUseCase taskUseCase = TaskUseCase()
@@ -47,6 +63,9 @@ class AddsController extends GetxController {
   @override
   void onInit() {
     date.text = formatDate(DateTime.now());
+    subscription =
+        Connectivity().onConnectivityChanged.listen(updateConnectionStatus);
+    print(isConnected);
     super.onInit();
   }
 
@@ -56,36 +75,77 @@ class AddsController extends GetxController {
     description.dispose();
     quantity.dispose();
     date.dispose();
-    print('Controller disposed');
+    subscription.cancel();
     super.onClose();
   }
 
+  void insertTaskDelayed(Task task) {
+    delayedActions.add(() => insertTask(task));
+  }
+
+  void checkAndExecuteDelayedActions() {
+    if (delayedActions.isNotEmpty) {
+      final delayedAction = delayedActions.removeAt(0);
+      delayedAction();
+    }
+  }
+
+  void updateConnectionStatus(ConnectivityResult connectivityResult) {
+    if (connectivityResult == ConnectivityResult.none) {
+      showCustomSnackbar("Warning ", "No Connection", Colors.yellow, true);
+      isConnected = false;
+      print(" $isConnected hehe");
+    }else
+    {
+      if (Get.isSnackbarOpen) {
+        Get.closeCurrentSnackbar();
+        isConnected = true;
+         print(" $isConnected heho");
+        checkAndExecuteDelayedActions();
+      }
+     
+    }
+  }
+
+  String fileUploadName(String filePath) {
+    String extension = filePath.split('.').last;
+    String basename = p.basenameWithoutExtension(filePath);
+    String newFileName =
+        '$basename-${DateTime.now().millisecondsSinceEpoch}.$extension';
+    return newFileName;
+  }
+
+  Future<String> uploadImageToSupabase() async {
+    final supabase = await Supabase.instance.client;
+    final file = File(pathImage.value);
+    final fileName = fileUploadName(pathImage.value);
+    final storageResponse =
+        supabase.storage.from('images').upload(fileName, file);
+
+    final a = await storageResponse;
+
+    final String publicUrl =
+        supabase.storage.from('images').getPublicUrl(fileName);
+
+    return publicUrl;
+  }
+
   FutureOr<void> insertTask(Task task) async {
-    final result = await taskUseCase.insertTaskRemoteExecute(task);
-    _message = result;
-    Get.snackbar("Success", _message,
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Color.fromARGB(255, 57, 221, 16),
-        colorText: Colors.black,
-        borderRadius: 10,
-        margin: const EdgeInsets.all(15),
-        animationDuration: const Duration(seconds: 1),
-        duration: const Duration(seconds: 2),
-        reverseAnimationCurve: Curves.easeInBack, // Animasi keluar
-        isDismissible: true, // Snackbar dapat ditutup dengan menggeser
-        dismissDirection:
-            DismissDirection.horizontal, // Arah geser untuk menutup Snackbar
-        mainButton: TextButton(
-          onPressed: () {
-            Get.back(); // Tombol aksi pada Snackbar
-          },
-          child: const Text(
-            "Dismiss",
-            style: TextStyle(color: Colors.black),
-          ),
-        ));
-    Get.offAllNamed(Routes.HOME);
-    Get.put(HomeController());
+     print(" $isConnected hehes");
+    if (isConnected) {
+      isLoading(true);
+      final imageUrl = await uploadImageToSupabase();
+      task.photo = imageUrl;
+      final result = await taskUseCase.insertTaskRemoteExecute(task);
+      _message = result;
+      isLoading(false);
+      showCustomSnackbar("Success", _message, Colors.green, false);
+      Get.offAllNamed(Routes.HOME);
+      Get.put(HomeController());
+    } else {
+      isLoading(true);
+      insertTaskDelayed(task);
+    }
   }
 
   FutureOr<void> pickImageFromCamera() async {

@@ -7,11 +7,11 @@ class Task extends Equatable {
   final int quantity;
   final String latitude;
   final String longitude;
-  final String photo;
+  String photo;
   final String date;
   final String address;
 
-  const Task(
+  Task(
       {this.id,
       required this.name,
       required this.description,

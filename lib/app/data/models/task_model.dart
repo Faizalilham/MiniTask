@@ -35,7 +35,7 @@ class TaskModel extends Equatable {
       address: address);
 
   factory TaskModel.fromEntity(Task task) => TaskModel(
-      id: task.id ?? 0,
+      id: task.id,
       name: task.name,
       description: task.description,
       quantity: task.quantity,

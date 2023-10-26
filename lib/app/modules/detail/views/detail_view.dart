@@ -1,4 +1,3 @@
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +12,7 @@ class DetailView extends GetView<DetailController> {
   DetailView({Key? key}) : super(key: key);
 
   GoogleMapController? _gmapsController;
+
   @override
   Widget build(BuildContext context) {
     Get.put(DetailController());
@@ -34,30 +34,34 @@ class DetailView extends GetView<DetailController> {
                         child: Container(
                           child: Row(
                             children: [
-                                Expanded(child: CachedNetworkImage(
-                                    imageUrl: controller.task['photo'],
-                                    placeholder: (context, url) =>
-                                        CircularProgressIndicator(),
-                                    errorWidget: (context, url, error) =>
-                                        Icon(Icons.error),
-                                    imageBuilder: (context, imageProvider) {
-                                      return Container(
-                                        width: 200,
-                                        height: 300,
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.all(Radius.circular(15)),
-                                          image: DecorationImage(
-                                              image: imageProvider,
-                                              fit: BoxFit.cover),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                
+                              Expanded(
+                                child: CachedNetworkImage(
+                                  imageUrl: controller.taskObject == null
+                                      ? controller.taskMap!['photo']
+                                      : controller.taskObject!.photo,
+                                  placeholder: (context, url) =>
+                                      CircularProgressIndicator(),
+                                  errorWidget: (context, url, error) =>
+                                      Icon(Icons.error),
+                                  imageBuilder: (context, imageProvider) {
+                                    return Container(
+                                      width: 200,
+                                      height: 300,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(15)),
+                                        image: DecorationImage(
+                                            image: imageProvider,
+                                            fit: BoxFit.cover),
+                                      ),
+                                    );
+                                  },
+                                ),
                               ),
-                                Expanded(child: Container(
-                                  padding: const EdgeInsets.all(15),
-                                  child: Column(
+                              Expanded(
+                                  child: Container(
+                                padding: const EdgeInsets.all(15),
+                                child: Column(
                                   crossAxisAlignment: CrossAxisAlignment
                                       .start, // Ratakan teks ke kiri
                                   children: [
@@ -70,7 +74,9 @@ class DetailView extends GetView<DetailController> {
                                     ),
                                     const SizedBox(height: 5),
                                     Text(
-                                      controller.task['name'],
+                                      controller.taskObject == null
+                                          ? controller.taskMap!['name']
+                                          : controller.taskObject!.name,
                                       textAlign: TextAlign
                                           .left, // Ratakan teks ke kiri
                                     ),
@@ -83,7 +89,9 @@ class DetailView extends GetView<DetailController> {
                                     ),
                                     const SizedBox(height: 5),
                                     Text(
-                                      controller.task['description'],
+                                      controller.taskObject == null
+                                          ? controller.taskMap!['description']
+                                          : controller.taskObject!.description,
                                       textAlign: TextAlign
                                           .left, // Ratakan teks ke kiri
                                     ),
@@ -96,7 +104,9 @@ class DetailView extends GetView<DetailController> {
                                     ),
                                     const SizedBox(height: 5),
                                     Text(
-                                      controller.task['date'],
+                                      controller.taskObject == null
+                                          ? controller.taskMap!['date']
+                                          : controller.taskObject!.date,
                                       textAlign: TextAlign
                                           .left, // Ratakan teks ke kiri
                                     ),
@@ -109,31 +119,31 @@ class DetailView extends GetView<DetailController> {
                                     ),
                                     const SizedBox(height: 5),
                                     Text(
-                                      controller.task['address'],
+                                      controller.taskObject == null
+                                          ? controller.taskMap!['address']
+                                          : controller.taskObject!.address,
                                       textAlign: TextAlign
                                           .left, // Ratakan teks ke kiri
                                     ),
                                   ],
                                 ),
-                                )
-
-                              )
+                              ))
                             ],
                           ),
                           // Widget untuk setengah pertama di sini
                         ),
                       ),
                       Expanded(
-                        flex: 4,
-                        child: Column(
-                          children: [
-                            const SizedBox(height: 20),
+                          flex: 4,
+                          child: Column(
+                            children: [
+                              const SizedBox(height: 20),
                               const Text(
                                 "Detail Address (Location)",
                                 style: TextStyle(
                                     fontSize: 18, fontWeight: FontWeight.bold),
                               ),
-                            Container(
+                              Container(
                                 width: double.infinity,
                                 height: 500,
                                 child: GoogleMap(
@@ -143,9 +153,15 @@ class DetailView extends GetView<DetailController> {
                                   },
                                   initialCameraPosition: CameraPosition(
                                     target: LatLng(
-                                        double.parse(controller.task['latitude']),
-                                        double.parse(
-                                            controller.task['longitude'])),
+                                        double.parse(controller.taskObject ==
+                                                null
+                                            ? controller.taskMap!['latitude']
+                                            : controller.taskObject!.latitude),
+                                        double.parse(controller.taskObject ==
+                                                null
+                                            ? controller.taskMap!['longitude']
+                                            : controller
+                                                .taskObject!.longitude)),
                                     zoom: 15,
                                   ),
                                   markers: {
@@ -153,9 +169,17 @@ class DetailView extends GetView<DetailController> {
                                         markerId: const MarkerId("marker1"),
                                         position: LatLng(
                                             double.parse(
-                                                controller.task['latitude']),
+                                                controller.taskObject == null
+                                                    ? controller
+                                                        .taskMap!['latitude']
+                                                    : controller
+                                                        .taskObject!.latitude),
                                             double.parse(
-                                                controller.task['longitude'])),
+                                                controller.taskObject == null
+                                                    ? controller
+                                                        .taskMap!['longitude']
+                                                    : controller.taskObject!
+                                                        .longitude)),
                                         draggable: true,
                                         icon: BitmapDescriptor.defaultMarker),
                                   },
@@ -172,13 +196,11 @@ class DetailView extends GetView<DetailController> {
                                   },
                                   onCameraMove: (CameraPosition position) {
                                     // Kembalikan true untuk mengaktifkan interaksi dengan peta
-                                    
                                   },
                                 ),
                               )
-                          ],
-                        )
-                      ),
+                            ],
+                          )),
                     ],
                   ),
                 ))));

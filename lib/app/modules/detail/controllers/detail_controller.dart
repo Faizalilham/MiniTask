@@ -2,12 +2,18 @@ import 'package:get/get.dart';
 import 'package:task_mobile/app/domain/entity/task.dart';
 
 class DetailController extends GetxController {
-  // final Task task = Get.arguments as Task;
-
-  final Map<String,dynamic> task = Get.arguments as Map<String,dynamic>;
+  final args = Get.arguments;
+  Task? taskObject;
+  Map<String, dynamic>? taskMap;
 
   @override
   void onInit() {
     super.onInit();
+
+    if (args is Task) {
+      taskObject = args as Task;
+    } else if (args is Map<String, dynamic>) {
+      taskMap = args as Map<String, dynamic>;
+    }
   }
 }

@@ -12,7 +12,6 @@ dependencies:
   google_fonts: ^6.1.0
   intl: ^0.17.0
   sqflite: ^2.0.0+3
-  shared_preferences: ^2.0.0
   image_picker: ^0.8.5+3
   image: ^3.2.0
   google_maps_flutter: ^2.2.1
@@ -25,6 +24,7 @@ dependencies:
   path: ^1.8.3
   cached_network_image: ^3.3.0
   lottie: ^2.7.0
+  shared_preferences: ^2.2.0
   connectivity_plus: ^5.0.1
 
 dev_dependencies: 

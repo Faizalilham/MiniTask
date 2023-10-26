@@ -19,19 +19,29 @@ class HomeController extends GetxController {
 
   final TaskUseCase taskUseCase = GetIt.I.get<TaskUseCase>();
 
+  Rx<bool> isConnected = true.obs;
+
   FutureOr<void> getAllTask() async {
     final result = await taskUseCase.getAllTaskExecute();
-    print(result); // Tambahkan ini
     listTask(result);
     listTask.refresh();
+    print("hehe ${result.toSet().toList()}");
+  }
+
+  FutureOr<void> insertTask(Task task) async {
+    final result = await taskUseCase.insertTaskExecute(task);
+    print(result);
   }
 
   void updateConnectionStatus(ConnectivityResult connectivityResult) {
     if (connectivityResult == ConnectivityResult.none) {
       showCustomSnackbar("Warning ", "No Connection", Colors.yellow, true);
-    } else {
       getAllTask();
+      print("true");
+    } else {
       getAllTaskRemote();
+      print("false");
+      isConnected(true);
       if (Get.isSnackbarOpen) {
         Get.closeCurrentSnackbar();
       }
@@ -39,17 +49,33 @@ class HomeController extends GetxController {
   }
 
   FutureOr<void> getAllTaskRemote() async {
-    final result = await taskUseCase.getAllTaskRemoteExecute();
-    print(result); // Tambahkan ini
+    List<Map<String, dynamic>> result =
+        await taskUseCase.getAllTaskRemoteExecute();
+    print(result);
+
     listTaskRemote(result);
-    listTask.refresh();
+    listTaskRemote.refresh();
+    for (Map<String, dynamic> taskData in result) {
+      final task = Task(
+          id: taskData['id'],
+          name: taskData['name'],
+          description: taskData['description'],
+          quantity: taskData['quantity'],
+          latitude: taskData['latitude'],
+          longitude: taskData['longitude'],
+          photo: taskData['photo'],
+          date: taskData['date'],
+          address: taskData['address']);
+      print(taskData['id']);
+      await insertTask(task);
+    }
   }
 
   @override
-  void onInit() {
+  void onInit() async {
     subscription =
         Connectivity().onConnectivityChanged.listen(updateConnectionStatus);
-    
+    updateConnectionStatus(await Connectivity().checkConnectivity());
     print(taskList);
     super.onInit();
   }

@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 class Task extends Equatable {
-  final int? id;
+  final int id;
   final String name;
   final String description;
   final int quantity;
@@ -12,7 +12,8 @@ class Task extends Equatable {
   final String address;
 
   Task(
-      {this.id,
+      {
+      required this.id,
       required this.name,
       required this.description,
       required this.latitude,

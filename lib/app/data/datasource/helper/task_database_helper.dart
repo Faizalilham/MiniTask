@@ -32,7 +32,7 @@ class TaskDatabaseHelper {
   void _onCreate(Database db, int version) async {
     await db.execute('''
       CREATE TABLE  $_tblTask (
-        "id" INTEGER ,
+        "id" INTEGER PRIMARI KEY NOT NULL,
         "name" TEXT,
         "description" TEXT,
         "quantity" INTEGER,
@@ -40,8 +40,7 @@ class TaskDatabaseHelper {
         "longitude" TEXT,
         "date" TEXT,
         "photo" TEXT,
-        "address" TEXT,
-        PRIMARY KEY ("id" AUTOINCREMENT)
+        "address" TEXT
       );
     ''');
     await db.execute('''
@@ -59,24 +58,10 @@ class TaskDatabaseHelper {
     ''');
   }
 
-
   FutureOr<int> insertTask(TaskModel task) async {
     final db = await database;
-    return await db!.rawInsert('''
-    INSERT INTO $_tblTask (name, description, quantity, latitude, longitude, date, photo,address)
-    VALUES (?, ?, ?, ?, ?, ?, ?,?)
-  ''', [
-      task.name,
-      task.description,
-      task.quantity,
-      task.latitude,
-      task.longitude,
-      task.date,
-      task.photo,
-      task.address,
-    ]);
+    return await db!.insert(_tblTask, task.toJson(), conflictAlgorithm:ConflictAlgorithm.replace);
   }
-
 
   FutureOr<Map<String, dynamic>?> gettaskById(int id) async {
     final db = await database;
@@ -95,8 +80,9 @@ class TaskDatabaseHelper {
 
   FutureOr<List<Map<String, dynamic>>> getTasks() async {
     final db = await database;
-    final List<Map<String, dynamic>> results = await db!.query(_tblTask);
-
+    final List<Map<String, dynamic>> results =
+        await db!.query(_tblTask, distinct: true);
+    print("hos $results");
     return results;
   }
 }

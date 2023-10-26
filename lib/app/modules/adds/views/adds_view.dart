@@ -1,3 +1,4 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
@@ -11,9 +12,8 @@ class AddsView extends GetView<AddsController> {
   const AddsView({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    controller.handleLocationPermission(context);
-    controller.getCurrentPosition(context);
-
+    
+  
     return Scaffold(
         appBar: AppBar(
           title: const Text("Add Task"),
@@ -25,7 +25,9 @@ class AddsView extends GetView<AddsController> {
                   if (controller.pathImage.value.isNotEmpty &&
                       controller.latitude.isNotEmpty &&
                       controller.longitude.isNotEmpty) {
-                    controller.insertTask(Task(
+                    controller.insertTask(
+                      Task(
+                        id:0,
                         name: controller.name.text.toString(),
                         description: controller.description.text.toString(),
                         latitude: controller.latitude.value,

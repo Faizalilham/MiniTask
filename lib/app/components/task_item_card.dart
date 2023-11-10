@@ -4,12 +4,13 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
-import 'package:task_mobile/app/domain/entity/task.dart';
+import 'package:task_mobile/app/domain/entity/task_request_remote.dart';
+import 'package:task_mobile/app/domain/entity/task_request_local.dart';
 import 'package:task_mobile/app/routes/app_pages.dart';
 
 class TaskItemCard extends StatelessWidget {
-  final Map<String, dynamic>? taskData;
-  final Task? taskDatas;
+  final TaskRequestRemote? taskData;
+  final TaskRequestLocal? taskDatas;
 
   TaskItemCard(this.taskData,this.taskDatas);
 
@@ -26,7 +27,7 @@ class TaskItemCard extends StatelessWidget {
         child: ListTile(
           contentPadding: const EdgeInsets.all(10),
           leading: CachedNetworkImage(
-            imageUrl: taskData!['photo'],
+            imageUrl: taskData!.photo,
             imageBuilder: (context, imageProvider) => Container(
               width: 80.0,
               height: 80.0,
@@ -42,8 +43,8 @@ class TaskItemCard extends StatelessWidget {
                 Lottie.asset("assets/loading.json", height: 50, width: 50),
             errorWidget: (context, url, error) => const Icon(Icons.error),
           ),
-          title: Text(taskData!['name']),
-          subtitle: Text(taskData!['description']),
+          title: Text(taskData!.meetingTittle),
+          subtitle: Text(taskData!.meetingLocation),
           trailing: const Icon(Icons.keyboard_arrow_right_outlined),
         ),
       ) : Card(
@@ -77,8 +78,8 @@ class TaskItemCard extends StatelessWidget {
                           height: 80.0,
                         ),
                 ),
-                title: Text(taskDatas!.name),
-                subtitle: Text(taskDatas!.description),
+                title: Text(taskDatas!.meetingTittle),
+                subtitle: Text(taskDatas!.meetingLocation),
                 trailing: const Icon(Icons.keyboard_arrow_right_outlined),
               ),
             ),

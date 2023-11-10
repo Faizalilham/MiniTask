@@ -4,17 +4,17 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
-import 'package:task_mobile/app/domain/entity/task.dart';
+import 'package:task_mobile/app/domain/entity/task_request_remote.dart';
+import 'package:task_mobile/app/domain/entity/task_request_local.dart';
 import 'package:task_mobile/app/domain/usecase/task_usecase.dart';
-import 'package:task_mobile/app/routes/app_pages.dart';
 import 'package:task_mobile/app/utils/utils.dart';
 
 class HomeController extends GetxController {
-  RxList<Task> listTask = <Task>[].obs;
-  List<Task> get taskList => listTask;
+  RxList<TaskRequestLocal> listTask = <TaskRequestLocal>[].obs;
+  List<TaskRequestLocal> get taskList => listTask;
 
-  RxList<Map<String, dynamic>> listTaskRemote = <Map<String, dynamic>>[].obs;
-  List<Map<String, dynamic>> get taskListRemote => listTaskRemote;
+  RxList<TaskRequestRemote> listTaskRemote = <TaskRequestRemote>[].obs;
+  List<TaskRequestRemote> get taskListRemote => listTaskRemote;
 
   late StreamSubscription<ConnectivityResult> subscription;
 
@@ -22,6 +22,8 @@ class HomeController extends GetxController {
 
   Rx<bool> isConnected = true.obs;
   bool autoPostExecuted = false;
+
+  int count = 0;
 
   FutureOr<void> getAllTask() async {
     final resultTask = await taskUseCase.getAllTaskExecute();
@@ -32,7 +34,7 @@ class HomeController extends GetxController {
     listTask.refresh();
   }
 
-  FutureOr<void> insertTask(Task task) async {
+  FutureOr<void> insertTask(TaskRequestLocal task) async {
     final result = await taskUseCase.insertTaskExecute(task);
     print(result);
   }
@@ -40,10 +42,13 @@ class HomeController extends GetxController {
   void updateConnectionStatus(ConnectivityResult connectivityResult) {
     if (connectivityResult == ConnectivityResult.none) {
       showCustomSnackbar("Warning ", "No Connection", Colors.yellow, true);
+
       isConnected(false);
+      Get.delete();
       getAllTask();
     } else {
       isConnected(true);
+      Get.delete();
       autoPost();
       getAllTaskRemote();
 
@@ -59,8 +64,9 @@ class HomeController extends GetxController {
   }
 
   Future<void> autoPost() async {
-    if(isConnected.value && !autoPostExecuted){
+    if (isConnected.value && !autoPostExecuted) {
       autoPostExecuted = true;
+
       String post = "";
       final result = await taskUseCase.getAllTaskCacheExecute();
       print("${result.length} haihai");
@@ -68,10 +74,17 @@ class HomeController extends GetxController {
         for (int i = 0; i < result.length; i++) {
           print("perulangan ke $i");
           final element = result[i];
-          final imageUrl =
-              await taskUseCase.insertImageRemoteExecute(element.photo);
-          element.photo = imageUrl;
-          post = await taskUseCase.insertTaskRemoteExecute(element);
+          post = await taskUseCase.insertTaskRemoteExecute(TaskRequestRemote(
+              id: element.id,
+              meetingTittle: element.meetingTittle,
+              meetingLocation: element.meetingLocation,
+              meetingNotes: element.meetingNotes,
+              meetingParticipants: element.meetingParticipants,
+              latitude: element.latitude,
+              longitude: element.longitude,
+              photo: element.photo,
+              date: element.date,
+              address: element.address));
         }
       }
 
@@ -90,22 +103,22 @@ class HomeController extends GetxController {
   }
 
   FutureOr<void> getAllTaskRemote() async {
-    List<Map<String, dynamic>> result =
-        await taskUseCase.getAllTaskRemoteExecute();
+    final result = await taskUseCase.getAllTaskRemoteExecute();
 
     listTaskRemote(result);
     listTaskRemote.refresh();
-    for (Map<String, dynamic> taskData in result) {
-      final task = Task(
-          id: taskData['id'],
-          name: taskData['name'],
-          description: taskData['description'],
-          quantity: taskData['quantity'],
-          latitude: taskData['latitude'],
-          longitude: taskData['longitude'],
-          photo: taskData['photo'],
-          date: taskData['date'],
-          address: taskData['address']);
+    for (TaskRequestRemote taskData in result) {
+      final task = TaskRequestLocal(
+          id: taskData.id,
+          meetingTittle: taskData.meetingTittle,
+          meetingLocation: taskData.meetingLocation,
+          meetingNotes: taskData.meetingNotes,
+          meetingParticipants: taskData.meetingParticipants,
+          latitude: taskData.latitude,
+          longitude: taskData.longitude,
+          photo: taskData.photo,
+          date: taskData.date,
+          address: taskData.address);
       await insertTask(task);
     }
   }
@@ -115,7 +128,15 @@ class HomeController extends GetxController {
     subscription =
         Connectivity().onConnectivityChanged.listen(updateConnectionStatus);
     updateConnectionStatus(await Connectivity().checkConnectivity());
-    print(taskList);
+
+    if (isConnected.value) {
+      count++;
+      Get.snackbar("$count", "message",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.white,
+          colorText: Colors.black,
+          borderRadius: 10);
+    }
     super.onInit();
   }
 }

@@ -1,4 +1,5 @@
-import 'package:task_mobile/app/domain/entity/task.dart';
+import 'package:task_mobile/app/domain/entity/task_request_remote.dart';
+import 'package:task_mobile/app/domain/entity/task_request_local.dart';
 import 'package:task_mobile/app/domain/repository/task_repository.dart';
 
 class TaskUseCase {
@@ -6,23 +7,23 @@ class TaskUseCase {
 
   TaskUseCase(this.taskRepository);
 
-  Future<List<Task>> getAllTaskExecute() => taskRepository.getAllTask();
+  Future<List<TaskRequestLocal>> getAllTaskExecute() => taskRepository.getAllTask();
 
-  Future<String> insertTaskExecute(Task task) =>
+  Future<String> insertTaskExecute(TaskRequestLocal task) =>
       taskRepository.insertTask(task);
 
-  Future<List<Map<String, dynamic>>> getAllTaskRemoteExecute() =>
+  Future<List<TaskRequestRemote>> getAllTaskRemoteExecute() =>
       taskRepository.getAllTaskRemote();
 
-  Future<String> insertTaskRemoteExecute(Task task) =>
-      taskRepository.insertTaskRemote(task);
+  Future<String> insertTaskRemoteExecute(TaskRequestRemote taskRequest) =>
+      taskRepository.insertTaskRemote(taskRequest);
 
-  Future<String> insertTaskCacheExecute(Task task) =>
+  Future<String> insertTaskCacheExecute(TaskRequestLocal task) =>
       taskRepository.insertTaskCache(task);
 
   Future<void> deleteTaskCacheExecute() => taskRepository.deleteTaskCache();
 
-  Future<List<Task>> getAllTaskCacheExecute() =>
+  Future<List<TaskRequestLocal>> getAllTaskCacheExecute() =>
       taskRepository.getAllTaskCache();
 
   Future<String> insertImageRemoteExecute(String pathImage) =>

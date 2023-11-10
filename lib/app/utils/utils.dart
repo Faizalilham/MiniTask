@@ -1,7 +1,11 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:task_mobile/app/modules/adds/controllers/adds_controller.dart';
 import 'package:path/path.dart' as p;
+import 'package:image/image.dart' as img;
 
 void showCustomSnackbar(String tittle, String message, Color color,bool isConnection) {
   Get.snackbar(
@@ -97,11 +101,45 @@ void showCustomBottomSheet(BuildContext context, AddsController controller) {
 }
 
 
-
 String fileUploadName(String filePath) {
   String extension = filePath.split('.').last;
   String basename = p.basenameWithoutExtension(filePath);
   String newFileName =
       '$basename-${DateTime.now().millisecondsSinceEpoch}.$extension';
   return newFileName;
+}
+
+Future<List<int>> compileToBytes(File image) async {
+  final bytes = await image.readAsBytes();
+  return await compressImage(bytes);
+}
+
+Future<String> fileToBase64(File file) async {
+  List<int> fileBytes = await file.readAsBytes();
+  String base64String = base64Encode(fileBytes);
+  return base64String;
+}
+
+Future<List<int>> compressImage(List<int> bytes) async {
+  int imageLength = bytes.length;
+  if (imageLength < 1000000) return bytes;
+
+  final img.Image image = img.decodeImage(bytes)!;
+  int compressQuality = 100;
+  int length = imageLength;
+  List<int> newByte = [];
+
+  do {
+    ///
+    compressQuality -= 10;
+
+    newByte = img.encodeJpg(
+      image,
+      quality: compressQuality,
+    );
+
+    length = newByte.length;
+  } while (length > 1000000);
+
+  return newByte;
 }

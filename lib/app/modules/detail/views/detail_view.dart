@@ -39,7 +39,7 @@ class DetailView extends GetView<DetailController> {
                               Expanded(
                                 child: controller.taskObject == null ? 
                                  CachedNetworkImage(
-                                        imageUrl: controller.taskMap!['photo'],
+                                        imageUrl: controller.taskMap!.photo,
                                         placeholder: (context, url) =>
                                             CircularProgressIndicator(),
                                         errorWidget: (context, url, error) =>
@@ -57,7 +57,7 @@ class DetailView extends GetView<DetailController> {
                                             ),
                                           );
                                         },
-                                      ) : controller.taskObject!.photo.contains("") ? CachedNetworkImage(
+                                      ) : controller.taskObject!.photo.contains("http") ? CachedNetworkImage(
                                         imageUrl: controller.taskObject!.photo,
                                         placeholder: (context, url) =>
                                             CircularProgressIndicator(),
@@ -99,8 +99,8 @@ class DetailView extends GetView<DetailController> {
                                     const SizedBox(height: 5),
                                     Text(
                                       controller.taskObject == null
-                                          ? controller.taskMap!['name']
-                                          : controller.taskObject!.name,
+                                          ? controller.taskMap!.meetingTittle
+                                          : controller.taskObject!.meetingTittle,
                                       textAlign: TextAlign
                                           .left, // Ratakan teks ke kiri
                                     ),
@@ -114,8 +114,8 @@ class DetailView extends GetView<DetailController> {
                                     const SizedBox(height: 5),
                                     Text(
                                       controller.taskObject == null
-                                          ? controller.taskMap!['description']
-                                          : controller.taskObject!.description,
+                                          ? controller.taskMap!.meetingLocation
+                                          : controller.taskObject!.meetingLocation,
                                       textAlign: TextAlign
                                           .left, // Ratakan teks ke kiri
                                     ),
@@ -129,7 +129,7 @@ class DetailView extends GetView<DetailController> {
                                     const SizedBox(height: 5),
                                     Text(
                                       controller.taskObject == null
-                                          ? controller.taskMap!['date']
+                                          ? controller.taskMap!.date
                                           : controller.taskObject!.date,
                                       textAlign: TextAlign
                                           .left, // Ratakan teks ke kiri
@@ -144,7 +144,7 @@ class DetailView extends GetView<DetailController> {
                                     const SizedBox(height: 5),
                                     Text(
                                       controller.taskObject == null
-                                          ? controller.taskMap!['address']
+                                          ? controller.taskMap!.address
                                           : controller.taskObject!.address,
                                       textAlign: TextAlign
                                           .left, // Ratakan teks ke kiri
@@ -179,11 +179,11 @@ class DetailView extends GetView<DetailController> {
                                     target: LatLng(
                                         double.parse(controller.taskObject ==
                                                 null
-                                            ? controller.taskMap!['latitude']
+                                            ? controller.taskMap!.latitude
                                             : controller.taskObject!.latitude),
                                         double.parse(controller.taskObject ==
                                                 null
-                                            ? controller.taskMap!['longitude']
+                                            ? controller.taskMap!.longitude
                                             : controller
                                                 .taskObject!.longitude)),
                                     zoom: 15,
@@ -195,13 +195,13 @@ class DetailView extends GetView<DetailController> {
                                             double.parse(
                                                 controller.taskObject == null
                                                     ? controller
-                                                        .taskMap!['latitude']
+                                                        .taskMap!.latitude
                                                     : controller
                                                         .taskObject!.latitude),
                                             double.parse(
                                                 controller.taskObject == null
                                                     ? controller
-                                                        .taskMap!['longitude']
+                                                        .taskMap!.longitude
                                                     : controller.taskObject!
                                                         .longitude)),
                                         draggable: true,

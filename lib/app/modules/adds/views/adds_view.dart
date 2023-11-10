@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
-import 'package:task_mobile/app/domain/entity/task.dart';
+import 'package:task_mobile/app/domain/entity/task_request_remote.dart';
+import 'package:task_mobile/app/domain/entity/task_request_local.dart';
 import 'package:task_mobile/app/utils/utils.dart';
 
 import '../controllers/adds_controller.dart';
@@ -20,22 +21,22 @@ class AddsView extends GetView<AddsController> {
           title: const Text("Add Task"),
           actions: [
             IconButton(
-              onPressed: () {
+              onPressed: () async {
                 if (controller.formKey.currentState!.validate()) {
                   FocusManager.instance.primaryFocus?.unfocus();
                   if (controller.pathImage.value.isNotEmpty &&
                       controller.latitude.isNotEmpty &&
                       controller.longitude.isNotEmpty) {
-                    controller.insertTask(Task(
+                    controller.insertTask(TaskRequestRemote(
                         id: 0,
-                        name: controller.name.text.toString(),
-                        description: controller.description.text.toString(),
+                        meetingTittle: controller.tittle.text.toString(),
+                        meetingLocation: controller.location.text.toString(),
                         latitude: controller.latitude.value,
                         longitude: controller.longitude.value,
                         photo: controller.pathImage.value,
                         date: controller.date.text.toString(),
-                        quantity:
-                            int.parse(controller.quantity.text.toString()),
+                        meetingNotes: controller.notes.text.toString(),
+                        meetingParticipants: controller.participants.text.toString(),
                         address: controller.currentAddress.value));
                   }
                 } else {
@@ -100,32 +101,32 @@ class AddsView extends GetView<AddsController> {
                               const SizedBox(height: 50),
                               TextFormField(
                                 enabled: !controller.isLoading.value,
-                                controller: controller.name,
+                                controller: controller.tittle,
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
-                                    return 'Kolom name tidak boleh kosong';
+                                    return 'Kolom tittle tidak boleh kosong';
                                   }
                                   return null;
                                 },
                                 decoration: InputDecoration(
-                                    hintText: "Name",
+                                    hintText: "tittle",
                                     border: const OutlineInputBorder(
                                       borderRadius:
                                           BorderRadius.all(Radius.circular(10)),
                                     ),
                                     suffixIcon: InkWell(
                                         onTap: () {
-                                          controller.name.clear();
+                                          controller.tittle.clear();
                                         },
                                         child: const Icon(Icons.clear))),
                               ),
                               const SizedBox(height: 20),
                               TextFormField(
                                 enabled: !controller.isLoading.value,
-                                controller: controller.description,
+                                controller: controller.location,
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
-                                    return 'Kolom description tidak boleh kosong';
+                                    return 'Kolom location tidak boleh kosong';
                                   }
                                   return null;
                                 },
@@ -134,35 +135,50 @@ class AddsView extends GetView<AddsController> {
                                       borderRadius:
                                           BorderRadius.all(Radius.circular(10)),
                                     ),
-                                    hintText: "Description",
+                                    hintText: "location",
                                     suffixIcon: InkWell(
                                         onTap: () {
-                                          controller.description.clear();
+                                          controller.location.clear();
                                         },
                                         child: const Icon(Icons.clear))),
                               ),
                               const SizedBox(height: 20),
                               TextFormField(
+                                maxLines: 8,
                                 enabled: !controller.isLoading.value,
-                                keyboardType: TextInputType.number,
-                                controller: controller.quantity,
+                                controller: controller.notes,
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
-                                    return 'Kolom quantity tidak boleh kosong';
+                                    return 'Kolom notes tidak boleh kosong';
                                   }
                                   return null;
                                 },
-                                decoration: InputDecoration(
-                                    hintText: "Quantity",
-                                    border: const OutlineInputBorder(
+                                decoration: const InputDecoration(
+                                    hintText: "notes",
+                                    border: OutlineInputBorder(
                                       borderRadius:
                                           BorderRadius.all(Radius.circular(10)),
                                     ),
-                                    suffixIcon: InkWell(
-                                        onTap: () {
-                                          controller.quantity.clear();
-                                        },
-                                        child: const Icon(Icons.clear))),
+                                    ),
+                              ),
+                              const SizedBox(height:20),
+                              TextFormField(
+                                maxLines: 8,
+                                enabled: !controller.isLoading.value,
+                                controller: controller.participants,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Kolom participants tidak boleh kosong';
+                                  }
+                                  return null;
+                                },
+                                decoration: const InputDecoration(
+                                    hintText: "participants",
+                                    border: OutlineInputBorder(
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(10)),
+                                    ),
+                                    ),
                               ),
                               const SizedBox(height: 20),
                               TextFormField(

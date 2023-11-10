@@ -1,15 +1,17 @@
 import 'dart:async';
 
-import 'package:task_mobile/app/data/models/task_model.dart';
+
+import 'package:task_mobile/app/data/models/local/task_local_model.dart';
+import 'package:task_mobile/app/data/models/remote/task_response_model.dart';
 
 abstract class LocalDataSourceTask {
-  FutureOr<String> insertTask(TaskModel entity);
+  FutureOr<String> insertTask(TaskLocalModel entity);
 
-  FutureOr<List<TaskModel>> getAllTask();
+  FutureOr<List<TaskLocalModel>> getAllTask();
 
-  Future<String> insertTaskCache(TaskModel task);
+  Future<String> insertTaskCache(TaskLocalModel task);
 
   Future<void> deleteTaskCache();
 
-  Future<List<TaskModel>> getAllTaskCache();
+  Future<List<TaskLocalModel>> getAllTaskCache();
 }

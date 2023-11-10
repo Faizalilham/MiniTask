@@ -1,19 +1,20 @@
 import 'package:get/get.dart';
-import 'package:task_mobile/app/domain/entity/task.dart';
+import 'package:task_mobile/app/domain/entity/task_request_local.dart';
+import 'package:task_mobile/app/domain/entity/task_request_remote.dart';
 
 class DetailController extends GetxController {
   final args = Get.arguments;
-  Task? taskObject;
-  Map<String, dynamic>? taskMap;
+  TaskRequestRemote? taskObject;
+  TaskRequestLocal? taskMap;
 
   @override
   void onInit() {
     super.onInit();
 
-    if (args is Task) {
-      taskObject = args as Task;
-    } else if (args is Map<String, dynamic>) {
-      taskMap = args as Map<String, dynamic>;
+    if (args is TaskRequestRemote) {
+      taskObject = args as TaskRequestRemote;
+    } else if (args is TaskRequestLocal) {
+      taskMap = args as TaskRequestLocal;
     }
   }
 }

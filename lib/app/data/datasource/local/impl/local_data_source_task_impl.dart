@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:task_mobile/app/data/datasource/helper/task_database_helper.dart';
 import 'package:task_mobile/app/data/datasource/local/local_data_source_task.dart';
-import 'package:task_mobile/app/data/models/task_model.dart';
+import 'package:task_mobile/app/data/models/local/task_local_model.dart';
 import 'package:task_mobile/app/utils/exception.dart';
 
 class LocalDataSourceTaskImpl extends LocalDataSourceTask {
@@ -11,7 +11,7 @@ class LocalDataSourceTaskImpl extends LocalDataSourceTask {
   LocalDataSourceTaskImpl({required this.taskDatabaseHelper});
 
   @override
-  FutureOr<String> insertTask(TaskModel entity) async {
+  FutureOr<String> insertTask(TaskLocalModel entity) async {
     try {
       await taskDatabaseHelper.insertTask(entity);
       return 'Adding data successfully';
@@ -21,11 +21,13 @@ class LocalDataSourceTaskImpl extends LocalDataSourceTask {
   }
 
   @override
-  FutureOr<List<TaskModel>> getAllTask() async {
+  FutureOr<List<TaskLocalModel>> getAllTask() async {
     try {
       final result = await taskDatabaseHelper.getTasks();
-      return result.map((e) => TaskModel.fromMap(e)).toList();
+      print("hoho $result");
+      return result.map((e) => TaskLocalModel.fromMap(e)).toList();
     } catch (e) {
+      print(e.toString());
       throw DatabaseException(e.toString());
     }
   }
@@ -36,7 +38,7 @@ class LocalDataSourceTaskImpl extends LocalDataSourceTask {
   }
 
   @override
-  Future<String> insertTaskCache(TaskModel task) async {
+  Future<String> insertTaskCache(TaskLocalModel task) async {
     try {
       await taskDatabaseHelper.insertTaskCache(task);
       return "Add data successfully";
@@ -44,12 +46,12 @@ class LocalDataSourceTaskImpl extends LocalDataSourceTask {
       throw e;
     }
   }
-  
+
   @override
-  Future<List<TaskModel>> getAllTaskCache()async {
+  Future<List<TaskLocalModel>> getAllTaskCache() async {
     try {
       final result = await taskDatabaseHelper.getTasksCache();
-      return result.map((e) => TaskModel.fromMap(e)).toList();
+      return result.map((e) => TaskLocalModel.fromMap(e)).toList();
     } catch (e) {
       throw DatabaseException(e.toString());
     }

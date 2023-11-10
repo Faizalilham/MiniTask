@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:task_mobile/app/domain/entity/task_request_local.dart';
 import 'package:task_mobile/app/utils/utils.dart';
 
 import 'package:flutter/material.dart';
@@ -11,18 +13,20 @@ import 'package:get_it/get_it.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:task_mobile/app/domain/entity/task.dart';
+import 'package:task_mobile/app/domain/entity/task_request_remote.dart';
 import 'package:task_mobile/app/domain/usecase/task_usecase.dart';
 import 'package:task_mobile/app/modules/home/controllers/home_controller.dart';
 import 'package:task_mobile/app/routes/app_pages.dart';
+import 'package:image/image.dart' as img;
 
 class AddsController extends GetxController {
   final formKey = GlobalKey<FormState>();
 
-  final TextEditingController name = TextEditingController();
-  final TextEditingController description = TextEditingController();
-  final TextEditingController quantity = TextEditingController();
+  final TextEditingController tittle = TextEditingController();
+  final TextEditingController location = TextEditingController();
   final TextEditingController date = TextEditingController();
+  final TextEditingController notes = TextEditingController();
+  final TextEditingController participants = TextEditingController();
 
   String formatDate(DateTime value) {
     return DateFormat.yMMMMd().format(value);
@@ -43,6 +47,8 @@ class AddsController extends GetxController {
   Rx<bool> isLoading = false.obs;
 
   Rx<DateTime> selectedDate = Rx<DateTime>(DateTime.now());
+
+  Rx<List<int>> bytes = Rx<List<int>>([]);
 
   Rx<String> currentAddress = "".obs;
   Rx<Position?> _currentPosition = Rx<Position?>(null);
@@ -71,9 +77,8 @@ class AddsController extends GetxController {
 
   @override
   void onClose() {
-    name.dispose();
-    description.dispose();
-    quantity.dispose();
+    tittle.dispose();
+    location.dispose();
     date.dispose();
     subscription.cancel();
     super.onClose();
@@ -94,13 +99,11 @@ class AddsController extends GetxController {
     }
   }
 
-  FutureOr<void> insertTask(Task task) async {
+  FutureOr<void> insertTask(TaskRequestRemote task) async {
     print(" $isConnected hehes");
     if (isConnected) {
       isLoading(true);
-      final imageUrl =
-          await taskUseCase.insertImageRemoteExecute(pathImage.value);
-      task.photo = imageUrl;
+
       final result = await taskUseCase.insertTaskRemoteExecute(task);
       _message = result;
       isLoading(false);
@@ -111,12 +114,23 @@ class AddsController extends GetxController {
     } else {
       // insertTaskDelayed()
       isLoading(true);
-      final result = await taskUseCase.insertTaskCacheExecute(task);
+      final result = await taskUseCase.insertTaskCacheExecute(TaskRequestLocal(
+          id: task.id,
+          meetingTittle: task.meetingTittle,
+          meetingLocation: task.meetingLocation,
+          meetingNotes: task.meetingNotes,
+          meetingParticipants: task.meetingParticipants,
+          latitude: task.latitude,
+          longitude: task.longitude,
+          photo: task.photo,
+          date: task.date,
+          address: task.address));
       _message = result;
       isLoading(false);
 
       Get.offAllNamed(Routes.HOME);
-      
+      // Get.back();
+
       // Get.back();
       showCustomSnackbar("Success", _message, Colors.green, false);
     }
@@ -128,6 +142,7 @@ class AddsController extends GetxController {
     if (returnedImage == null) return;
     selectedImage.value = File(returnedImage.path);
     pathImage(returnedImage.path);
+    bytes(compileToBytes(selectedImage.value!) as List<int>?);
   }
 
   FutureOr<void> pickImageFromGallery() async {
@@ -136,6 +151,7 @@ class AddsController extends GetxController {
     if (returnedImage == null) return;
     selectedImage.value = File(returnedImage.path);
     pathImage(returnedImage.path);
+    bytes(await compileToBytes(selectedImage.value!));
   }
 
   Future<bool> handleLocationPermission(BuildContext context) async {

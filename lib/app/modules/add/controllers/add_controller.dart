@@ -8,7 +8,9 @@ import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:task_mobile/app/domain/entity/task.dart';
+import 'package:task_mobile/app/data/models/remote/task_remote_model.dart';
+import 'package:task_mobile/app/domain/entity/task_request_remote.dart';
+import 'package:task_mobile/app/domain/entity/task_request_local.dart';
 import 'package:task_mobile/app/domain/usecase/task_usecase.dart';
 
 class AddController extends GetxController {
@@ -38,8 +40,8 @@ class AddController extends GetxController {
   String _message = '';
   String get message => _message;
 
-  List<Task> _listTask = [];
-  List<Task> get listTask => _listTask;
+  // List<TaskRequest> _listTask = [];
+  // List<TaskRequest> get listTask => _listTask;
 
   final TaskUseCase taskUseCase = GetIt.I.get<TaskUseCase>();
 
@@ -61,16 +63,16 @@ class AddController extends GetxController {
     super.onClose();
   }
 
-  FutureOr<void> insertTask(Task task) async {
-    final result = await taskUseCase.insertTaskExecute(task);
-    _message = result;
-    print(_message);
-  }
+  // FutureOr<void> insertTask(TaskRequest task) async {
+  //   final result = await taskUseCase.insertTaskExecute(task);
+  //   _message = result;
+  //   print(_message);
+  // }
 
-  FutureOr<void> getAllTask() async {
-    final result = await taskUseCase.getAllTaskExecute();
-    _listTask = result;
-  }
+  // FutureOr<void> getAllTask() async {
+  //   final result = await taskUseCase.getAllTaskExecute();
+  //   _listTask = result;
+  // }
 
   FutureOr<void> pickImageFromCamera() async {
     final returnedImage =

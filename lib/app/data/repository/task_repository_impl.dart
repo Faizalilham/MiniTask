@@ -2,8 +2,10 @@ import 'dart:async';
 
 import 'package:task_mobile/app/data/datasource/local/local_data_source_task.dart';
 import 'package:task_mobile/app/data/datasource/remote/remote_data_source_task.dart';
-import 'package:task_mobile/app/data/models/task_model.dart';
-import 'package:task_mobile/app/domain/entity/task.dart';
+import 'package:task_mobile/app/data/models/local/task_local_model.dart';
+import 'package:task_mobile/app/data/models/remote/task_remote_model.dart';
+import 'package:task_mobile/app/domain/entity/task_request_remote.dart';
+import 'package:task_mobile/app/domain/entity/task_request_local.dart';
 import 'package:task_mobile/app/domain/repository/task_repository.dart';
 
 class TaskRepositoryImpl implements TaskRepository {
@@ -14,16 +16,16 @@ class TaskRepositoryImpl implements TaskRepository {
       {required this.localDataSourceTask, required this.remoteDataSourceTask});
 
   @override
-  Future<List<Task>> getAllTask() async {
+  Future<List<TaskRequestLocal>> getAllTask() async {
     final result = await localDataSourceTask.getAllTask();
     return result.map((e) => e.toEntity()).toList();
   }
 
   @override
-  Future<String> insertTask(Task task) async {
+  Future<String> insertTask(TaskRequestLocal task) async {
     try {
       final result =
-          await localDataSourceTask.insertTask(TaskModel.fromEntity(task));
+          await localDataSourceTask.insertTask(TaskLocalModel.fromEntity(task));
       return result;
     } catch (e) {
       print(e);
@@ -32,14 +34,12 @@ class TaskRepositoryImpl implements TaskRepository {
   }
 
   @override
-  Future<List<Map<String, dynamic>>> getAllTaskRemote() {
-    return remoteDataSourceTask.getAllTask();
+  Future<List<TaskRequestRemote>> getAllTaskRemote() async {
+    final result = await remoteDataSourceTask.getAllTask();
+    return result.map((e) => e.toEntity()).toList();
   }
 
-  @override
-  Future<String> insertTaskRemote(Task task) {
-    return remoteDataSourceTask.insertTask(TaskModel.fromEntity(task));
-  }
+ 
 
   @override
   Future<void> deleteTaskCache() {
@@ -47,12 +47,12 @@ class TaskRepositoryImpl implements TaskRepository {
   }
 
   @override
-  Future<String> insertTaskCache(Task task) {
-    return localDataSourceTask.insertTaskCache(TaskModel.fromEntity(task));
+  Future<String> insertTaskCache(TaskRequestLocal task) {
+    return localDataSourceTask.insertTaskCache(TaskLocalModel.fromEntity(task));
   }
 
   @override
-  Future<List<Task>> getAllTaskCache() async {
+  Future<List<TaskRequestLocal>> getAllTaskCache() async {
     final result = await localDataSourceTask.getAllTaskCache();
     return result.map((e) => e.toEntity()).toList();
   }
@@ -60,5 +60,10 @@ class TaskRepositoryImpl implements TaskRepository {
   @override
   Future<String> insertImageRemote(String pathImage) {
     return remoteDataSourceTask.insertImage(pathImage);
+  }
+
+  @override
+  Future<String> insertTaskRemote(TaskRequestRemote taskRequest) {
+    return remoteDataSourceTask.insertTask(TaskRemoteModel.fromEntity(taskRequest));
   }
 }

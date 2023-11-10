@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:sqflite/sqflite.dart';
-import 'package:task_mobile/app/data/models/task_model.dart';
+import 'package:task_mobile/app/data/models/local/task_local_model.dart';
+
+import 'package:task_mobile/app/data/models/remote/task_response_model.dart';
 
 class TaskDatabaseHelper {
   static TaskDatabaseHelper? _taskDatabaseHelper;
@@ -33,9 +35,10 @@ class TaskDatabaseHelper {
     await db.execute('''
       CREATE TABLE  $_tblTask (
         "id" INTEGER PRIMARI KEY NOT NULL,
-        "name" TEXT,
-        "description" TEXT,
-        "quantity" INTEGER,
+        "title" TEXT,
+        "location" TEXT,
+        "notes" INTEGER,
+        "participants" TEXT,
         "latitude" TEXT,
         "longitude" TEXT,
         "date" TEXT,
@@ -45,10 +48,11 @@ class TaskDatabaseHelper {
     ''');
     await db.execute('''
       CREATE TABLE  $_tblCache (
-        "id" INTEGER ,
-        "name" TEXT,
-        "description" TEXT,
-        "quantity" INTEGER,
+        "id" INTEGER NOT NULL,
+        "title" TEXT,
+        "location" TEXT,
+        "notes" INTEGER,
+        "participants" TEXT,
         "latitude" TEXT,
         "longitude" TEXT,
         "date" TEXT,
@@ -59,7 +63,7 @@ class TaskDatabaseHelper {
     ''');
   }
 
-  FutureOr<int> insertTaskCache(TaskModel task) async {
+  FutureOr<int> insertTaskCache(TaskLocalModel task) async {
     final db = await database;
     return await db!.insert(_tblCache, task.toJson(), conflictAlgorithm:ConflictAlgorithm.replace);
   }
@@ -69,7 +73,7 @@ class TaskDatabaseHelper {
     await db!.delete(_tblCache);
   }
 
-  FutureOr<int> insertTask(TaskModel task) async {
+  FutureOr<int> insertTask(TaskLocalModel task) async {
     final db = await database;
     return await db!.insert(_tblTask, task.toJson(), conflictAlgorithm:ConflictAlgorithm.replace);
   }
